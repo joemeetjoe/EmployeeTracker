@@ -1,5 +1,6 @@
 const { query } = require('express');
 
+
 const mysql = require('mysql2/promise');
 let db;
 async function main() {
@@ -36,17 +37,34 @@ let deptQuery = async() => {
     console.table(query);
 };
 
-let individualRoleQuery = () => {
+let individualRoleQuery = async() => {
     let queryArray = [];
-    db.query('SELECT title FROM roles ORDER BY id;', (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-            queryArray = result;
-        })
-console.log(queryArray);
-return queryArray
-}
+    const query =  await db.query('SELECT title FROM roles ORDER BY id;').then((result) => {
+        let neededArray = result[0];
+        for ( let i = 0; i < neededArray.length; i++){
+            queryArray.push(neededArray[i].title) ;
+        };
+        return queryArray;
+    });
+    return(queryArray);
+};
+let individualNameQuery = async() => {
+    let queryArray = [];
+    const query =  await db.query('SELECT first_name, last_name FROM employees ORDER BY id;').then((result) => {
+        let neededArray = result[0];
+        for ( let i = 0; i < neededArray.length; i++){
+            queryArray.push(neededArray[i].first_name + " " + neededArray[i].last_name) ;
+        };
+        return queryArray;
+    });
+    return(queryArray);
+};
+
+
+
+
+
+
 
 // let employeeAdd = (first_name, last_name, role, manager) => {
 //     db.query('')
@@ -60,6 +78,9 @@ module.exports = {
     roleQuery,
     deptQuery,
     individualRoleQuery,
+    individualNameQuery
+    
+
 }
 
 
