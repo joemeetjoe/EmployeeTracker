@@ -55,9 +55,8 @@ let addEmployeeQuestions = async() => {
             choices: await helper.individualNameQuery(),
         }
     ])
-    .then ((answers) => {
-        
-        console.log("Employee Added to Database");
+    .then (async(answers) => {
+        await helper.addEmployee(answers);
         questions();
     })
 }
@@ -67,20 +66,19 @@ let employeeRoleQuestions = async() => {
     .prompt ([
         {
             type: 'list',
-            name: 'role_answer',
-            message: "Which employees role would you like to update?",
+            name: 'employee_answer',
+            message: "Which employees' role would you like to update?",
             choices: await helper.individualNameQuery(),
         },
         {
             type: 'list',
-            name: 'manager_answer',
-            message: "What would you like their role to be?",
+            name: 'update_role_answer',
+            message: "What would you like their new role to be?",
             choices: await helper.individualRoleQuery(),
         }
     ])
-    .then ((answers) => {
-        
-        console.log("Role of Employee Changed");
+    .then ( async(answers) => {
+        await helper.updateEmployeeRole(answers);
         questions();
     })
 };
@@ -98,10 +96,15 @@ let addRoleQuestions = async() => {
             name: 'salary_answer',
             message: "What is the the salary of the role?"
         },
+        {
+            type: 'list',
+            name: 'department_answer',
+            message: "What department does this belong in?",
+            choices: await helper.individualDeptQuery(),
+        }
     ])
-    .then ((answers) => {
-        
-        console.log("Role added to database");
+    .then (async (answers) => {
+        await helper.addRoles(answers)
         questions();
     })
 };
@@ -115,9 +118,8 @@ let addDepartmentQuestions = async() => {
             message: "What is the the name of the department?"
         },
     ])
-    .then ((answers) => {
-        
-        console.log("Department added to database");
+    .then ( async (answers) => {
+        await helper.addDepartments(answers)
         questions();
     })
 };

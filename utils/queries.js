@@ -59,18 +59,80 @@ let individualNameQuery = async() => {
     });
     return(queryArray);
 };
+let individualDeptQuery = async() => {
+    let queryArray = [];
+    const query =  await db.query('SELECT title FROM departments ORDER BY id;').then((result) => {
+        let neededArray = result[0];
+        for ( let i = 0; i < neededArray.length; i++){
+            queryArray.push(neededArray[i].title) ;
+        };
+        return queryArray;
+    });
+    return queryArray;
+};
+
+let addDepartments = async(department_answer) => {
+    const query = await db.query('INSERT INTO departments (title) VALUES (?)', [department_answer.department_answer]).then((result) => {
+        console.log(`
+        
+        ${department_answer.department_answer} added to database
+        
+        `);
+    });
+}
+
+let roleId;
+let addRoles = async(answers) => {
+    const getDeptIdQuery = await db.query('SELECT id FROM departments WHERE title = ?', [answers.department_answer]).then((result) => result[0]);
+            roleId = getDeptIdQuery[0].id;
+    
+    const query = await db.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)', [answers.role_answer, answers.salary_answer, roleId]).then((result) => {
+        console.log(`
+
+        ${answers.role_answer} added to database
+        
+        `)
+    });
+}
+
+let updateEmployeeRole = async(answers) => {
+    let nameArray = answers.employee_answer.split(" ");
+    console.log(answers.update_role_answer);
+    const getRolesIdQuery = await db.query('SELECT id FROM roles WHERE title = ?', [answers.update_role_answer]).then((result) => result[0])
+            roleId = getRolesIdQuery[0].id;
+            console.log(roleId);
+
+    const query = await db.query('UPDATE employees SET role_id = ? WHERE first_name = ?', [ roleId, nameArray[0]]).then((result) => {
+        console.log(`
+
+        ${nameArray[0]}'s role changed to ${answers.update_role_answer}.
+        
+        `)
+    });
+};
+let addEmployee = async(answers) => {
+    let nameArray = answers.manager_answer.split(" ");
+    const getRolesIdQuery = await db.query('SELECT id FROM roles WHERE title = ?', [answers.role_answer]).then((result) => result[0])
+            let ManagerRoleId = getRolesIdQuery[0].id;
+            console.log(ManagerRoleId)
+            
+    const getManagerIdQuery = await db.query('SELECT id FROM employees WHERE first_name = ?', [nameArray[0]]).then((result) => result[0])
+            roleId = getManagerIdQuery[0].id;
+            console.log(roleId)
+            
+
+    const query = await db.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [ answers.first_name, answers.last_name, roleId, ManagerRoleId ]).then((result) => {
+        console.log(`
+
+        ${answers.first_name} added as an employee.
+        
+        `)
+    });
+};
 
 
 
 
-
-
-
-// let employeeAdd = (first_name, last_name, role, manager) => {
-//     db.query('')
-// }
-
-// individualRoleQuery();
 
 
 module.exports = {
@@ -78,7 +140,12 @@ module.exports = {
     roleQuery,
     deptQuery,
     individualRoleQuery,
-    individualNameQuery
+    individualNameQuery,
+    addDepartments,
+    addRoles,
+    individualDeptQuery,
+    updateEmployeeRole,
+    addEmployee
     
 
 }
