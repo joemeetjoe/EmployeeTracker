@@ -34,13 +34,11 @@ let addEmployeeQuestions = async() => {
             type: 'input',
             name: 'first_name',
             message: "What is the employee's first name?"
-            
         },
         { 
             type: 'input',
             name: 'last_name',
             message: "What is the employee's last name?",
-
         },
         {
             type: 'list',
@@ -124,11 +122,6 @@ let addDepartmentQuestions = async() => {
     })
 };
 
-
-
-
-
-
 // answer handler for first set of questions
 let answerHandler = async (answers) => {
     if (answers.MenuAnswer == 'Quit'){
@@ -153,8 +146,7 @@ let answerHandler = async (answers) => {
     }
 };
 
-
-
+// initialize with greeting
 let init = () => {
     let greeting = `
     __________________
@@ -165,5 +157,5 @@ let init = () => {
     console.log(greeting);
     questions();
 }
-
+// calling init
 init();

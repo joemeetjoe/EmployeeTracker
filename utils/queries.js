@@ -1,11 +1,11 @@
+// importing in query from express
 const { query } = require('express');
-
-
+// requiring mysql2 promises
 const mysql = require('mysql2/promise');
+
 let db;
 async function main() {
-
-// Connect to database
+// Connect to database and save to db
 db = await mysql.createConnection(
     {
     host: 'localhost',
@@ -21,22 +21,22 @@ db = await mysql.createConnection(
 main();
 
 
-
+// query for showing all employees
 let employeeQuery = async() => {
     const query = await db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.title AS department, roles.salary, employees_copy.first_name AS manager FROM    (((employees INNER JOIN roles ON employees.role_id = roles.id) INNER JOIN departments ON roles.department_id = departments.id) LEFT JOIN employees as employees_copy ON employees.manager_id = employees_copy.id) ORDER BY id;').then((result) => result[0]);
     console.table(query);
 };
-
+// query for showing all roles
 let roleQuery = async() => {
     const query = await db.query('SELECT  roles.id, roles.title, departments.title as departments, roles.salary FROM (roles INNER JOIN departments ON department_id = departments.id) ORDER BY id;').then((result) => result[0]);
     console.table(query);  
 };
-
+// query for showing all departments
 let deptQuery = async() => {
     const query =  await db.query('SELECT * FROM departments ORDER BY id;').then((result) => result[0]);
     console.table(query);
 };
-
+// query for showing individual roles
 let individualRoleQuery = async() => {
     let queryArray = [];
     const query =  await db.query('SELECT title FROM roles ORDER BY id;').then((result) => {
@@ -48,6 +48,7 @@ let individualRoleQuery = async() => {
     });
     return(queryArray);
 };
+// query for showing individual names
 let individualNameQuery = async() => {
     let queryArray = [];
     const query =  await db.query('SELECT first_name, last_name FROM employees ORDER BY id;').then((result) => {
@@ -59,6 +60,7 @@ let individualNameQuery = async() => {
     });
     return(queryArray);
 };
+// query for showing individual departments
 let individualDeptQuery = async() => {
     let queryArray = [];
     const query =  await db.query('SELECT title FROM departments ORDER BY id;').then((result) => {
@@ -70,7 +72,7 @@ let individualDeptQuery = async() => {
     });
     return queryArray;
 };
-
+// adding in departments
 let addDepartments = async(department_answer) => {
     const query = await db.query('INSERT INTO departments (title) VALUES (?)', [department_answer.department_answer]).then((result) => {
         console.log(`
@@ -80,7 +82,7 @@ let addDepartments = async(department_answer) => {
         `);
     });
 }
-
+// adding in roles
 let roleId;
 let addRoles = async(answers) => {
     const getDeptIdQuery = await db.query('SELECT id FROM departments WHERE title = ?', [answers.department_answer]).then((result) => result[0]);
@@ -94,7 +96,7 @@ let addRoles = async(answers) => {
         `)
     });
 }
-
+// updating employee roles
 let updateEmployeeRole = async(answers) => {
     let nameArray = answers.employee_answer.split(" ");
     console.log(answers.update_role_answer);
@@ -110,6 +112,7 @@ let updateEmployeeRole = async(answers) => {
         `)
     });
 };
+// adding in employees
 let addEmployee = async(answers) => {
     let nameArray = answers.manager_answer.split(" ");
     const getRolesIdQuery = await db.query('SELECT id FROM roles WHERE title = ?', [answers.role_answer]).then((result) => result[0])
@@ -129,12 +132,7 @@ let addEmployee = async(answers) => {
         `)
     });
 };
-
-
-
-
-
-
+// exporting all of the functions
 module.exports = {
     employeeQuery,
     roleQuery,
@@ -146,8 +144,6 @@ module.exports = {
     individualDeptQuery,
     updateEmployeeRole,
     addEmployee
-    
-
 }
 
 
